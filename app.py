@@ -29,7 +29,7 @@ if page == 'World Population Statistics 📊':
         font-size: 18px;
     }
     .st-emotion-cache-1espb9k a {
-        color: rgb(234, 237, 240);
+        color: #fff;
         text-decoration: none;
     }
     .sidebar .sidebar-content a:hover {
@@ -47,7 +47,7 @@ if page == 'World Population Statistics 📊':
     country_data = population_df[population_df['Country/Territory'] == selected_country]
 
     # Display selected country data
-    st.write(f'### 🌍 Population Data for {selected_country}', country_data)
+    st.write(f'###  Population Data for {selected_country}', country_data)
 
     # Reshape the DataFrame for plotting
     years = ['2022 Population', '2020 Population', '2015 Population', '2010 Population', '2000 Population', '1990 Population', '1980 Population', '1970 Population']
@@ -59,7 +59,7 @@ if page == 'World Population Statistics 📊':
         population_data.loc[population_data['Year'] == int(year.split()[0]), 'Density (per km²)'] = population_data['Population'] / country_data['Area (km²)'].values[0]
 
     # Plotting
-    st.write('<h2 id="population-growth-rate"> Population Growth Rate</h2>', unsafe_allow_html=True)
+    st.write('<h2 id="population-growth-rate">Population Growth Rate</h2>', unsafe_allow_html=True)
     plt.figure(figsize=(12, 5), facecolor='#262730')
     ax = sns.lineplot(data=population_data, x='Year', y='Population', color='blue')
     ax.set_facecolor('#262730')
@@ -90,7 +90,7 @@ if page == 'World Population Statistics 📊':
     st.pyplot(plt)
 
     # Insights section
-    st.write('<h2 id="insights-from-the-data">Insights from the Data</h2>', unsafe_allow_html=True)
+    st.write('<h2 id="insights-from-the-data"> Insights from the Data</h2>', unsafe_allow_html=True)
 
     st.write('### 📈 Population Growth Trends')
     st.write('By examining the line plot of population over the years, you can identify trends in population growth for the selected country. For example, you might observe periods of rapid growth, stability, or decline.')
@@ -136,8 +136,8 @@ elif page == 'World Happiness Report 😊':
     .sidebar .sidebar-content {
         font-size: 18px;
     }
-    .st-emotion-cache-1espb9k a {
-        color: rgb(234, 237, 240);
+     .st-emotion-cache-1espb9k a {
+        color: #fff;
         text-decoration: none;
     }
     .sidebar .sidebar-content a:hover {
@@ -152,7 +152,7 @@ elif page == 'World Happiness Report 😊':
     st.sidebar.markdown('<a href="#insights-from-the-data">🔍 Insights from the Data</a>', unsafe_allow_html=True)
 
     # Plotting
-    st.write('<h2 id="happiness-score">Happiness Score</h2>', unsafe_allow_html=True)
+    st.write('<h2 id="happiness-score"> Happiness Score</h2>', unsafe_allow_html=True)
     plt.figure(figsize=(10, 5), facecolor='#262730')
     ax = sns.barplot(data=country_data, x='Country name', y='Ladder score', color='blue')
     ax.set_facecolor('#262730')
@@ -162,19 +162,23 @@ elif page == 'World Happiness Report 😊':
     ax.tick_params(colors='white')
     st.pyplot(plt)
 
-    st.write('<h2 id="happiness-factors">Happiness Factors</h2>', unsafe_allow_html=True)
-    factors = ['Logged GDP per capita', 'Social support', 'Healthy life expectancy', 'Freedom to make life choices', 'Generosity', 'Perceptions of corruption']
+    st.write('<h2 id="happiness-factors"> Happiness Factors</h2>', unsafe_allow_html=True)
+    factors = ['Logged GDP per capita', 'Social support', 'Generosity','Healthy life expectancy', 'Freedom to make life choices', 'Perceptions of corruption']
+    factor_data = country_data.melt(id_vars=['Country name'], value_vars=factors, var_name='Factor', value_name='Score')
+
+    # Ensure all values are non-negative
+    factor_data['Score'] = factor_data['Score'].clip(lower=0)
+
+    # Plotting pie chart
     plt.figure(figsize=(10, 5), facecolor='#262730')
-    ax = sns.barplot(data=country_data.melt(id_vars=['Country name'], value_vars=factors, var_name='Factor', value_name='Score'), x='Factor', y='Score', color='blue')
-    ax.set_facecolor('#262730')
-    ax.set_title(f'Happiness Factors for {selected_country}', color='white')
-    ax.set_xlabel('Factor', color='white')
-    ax.set_ylabel('Score', color='white')
-    ax.tick_params(colors='white')
+    plt.pie(factor_data['Score'], labels=factor_data['Factor'], colors=sns.color_palette('deep'), autopct='%1.1f%%', startangle=140, textprops={'color': 'white'}, labeldistance=1.4)
+    plt.title(f'Happiness Factors for {selected_country}', color='white')
+    plt.axis('equal')  
+    plt.tick_params(color='white')
     st.pyplot(plt)
 
     # Correlation heatmap
-    st.write('<h2 id="correlation-matrix"> Correlation Matrix</h2>', unsafe_allow_html=True)
+    st.write('<h2 id="correlation-matrix">Correlation Matrix</h2>', unsafe_allow_html=True)
     correlation = happiness_df[['Ladder score', 'Logged GDP per capita', 'Social support', 'Healthy life expectancy', 'Freedom to make life choices', 'Generosity', 'Perceptions of corruption']].corr()
     plt.figure(figsize=(10, 8), facecolor='#262730')
     ax = sns.heatmap(correlation, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
@@ -184,13 +188,13 @@ elif page == 'World Happiness Report 😊':
     st.pyplot(plt)
 
     # Insights section
-    st.write('<h2 id="insights-from-the-data">Insights from the Data</h2>', unsafe_allow_html=True)
+    st.write('<h2 id="insights-from-the-data"> Insights from the Data</h2>', unsafe_allow_html=True)
 
     st.write('### Happiness Score Trends 😊 ')
     st.write('By examining the bar plot of happiness scores, you can identify the overall happiness score for the selected country.')
 
     st.write('### Happiness Factors Analysis 😊 ')
-    st.write('The bar plot of happiness factors can reveal which factors contribute most to the happiness score of the selected country. You can compare the scores of different factors to understand their impact.')
+    st.write('The pie chart of happiness factors can reveal which factors contribute most to the happiness score of the selected country. You can compare the scores of different factors to understand their impact.')
 
     st.write('### 🌍 Country-Specific Insights')
     st.write('By selecting different countries from the sidebar, you can compare their happiness statistics. This can help identify unique patterns or anomalies specific to certain countries.')
